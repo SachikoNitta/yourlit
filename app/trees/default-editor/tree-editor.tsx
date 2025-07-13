@@ -65,7 +65,10 @@ export default function Component() {
     aiProvider: 'openai',
     responseLanguage: 'en',
     defaultNumAnswers: 3,
-    defaultResponseLength: 'medium'
+    defaultResponseLength: 'medium',
+    storageType: 'localStorage',
+    firebaseApiKey: '',
+    firebaseProjectId: ''
   })
   const [isHydrated, setIsHydrated] = useState(false)
   const [currentPage, setCurrentPage] = useState<'trees' | 'tree' | 'settings' | 'stories'>('trees')
@@ -467,6 +470,12 @@ export default function Component() {
           onResponseLanguageChange={(language) => updateSettings({ responseLanguage: language })}
           onDefaultNumAnswersChange={(count) => updateSettings({ defaultNumAnswers: count })}
           onDefaultResponseLengthChange={(length) => updateSettings({ defaultResponseLength: length })}
+          onStorageTypeChange={(storageType) => updateSettings({ storageType })}
+          onFirebaseApiKeyChange={(key) => updateSettings({ firebaseApiKey: key })}
+          onFirebaseProjectIdChange={(projectId) => updateSettings({ firebaseProjectId: projectId })}
+          storageType={settings.storageType}
+          firebaseApiKey={settings.firebaseApiKey}
+          firebaseProjectId={settings.firebaseProjectId}
         />
       )}
       

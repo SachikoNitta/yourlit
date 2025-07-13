@@ -1,4 +1,4 @@
-import SimpleTreeEditor from './simple-tree-editor'
+import SimpleTreeEditor from './simple-editor/simple-tree-editor'
 
 export default function SimpleEditorPage() {
   return <SimpleTreeEditor />

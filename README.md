@@ -48,6 +48,7 @@ Build rich, multi-path stories—each question you ask leads to new twists, outc
 - Node.js 18+ 
 - npm or yarn
 - OpenAI API key or Gemini API key
+- (Optional) Firebase project for cloud storage
 
 ### Installation
 
@@ -72,13 +73,68 @@ Build rich, multi-path stories—each question you ask leads to new twists, outc
 
 ### Configuration
 
-1. **Set up API Keys**
+1. **Set up AI API Keys**
    - Go to Settings page in the application
    - Enter your OpenAI API key (starts with `sk-`) or Gemini API key
    - Select your preferred AI provider
    - Choose default response language and settings
 
-2. **Environment Variables** (Optional)
+2. **Set up Storage (Optional - Cloud Sync)**
+   
+   **For Local Storage (Default):**
+   - No setup required
+   - Data stays in your browser
+   - No sync across devices
+   
+   **For Cloud Storage (Firestore):**
+   
+   a) **Create Firebase Project:**
+   ```
+   1. Go to https://console.firebase.google.com/
+   2. Click "Create a project"
+   3. Follow the setup wizard
+   4. Enable Firestore Database:
+      - Go to Firestore Database in sidebar
+      - Click "Create database"
+      - Choose "Start in test mode" for now
+      - Select a location close to you
+   ```
+   
+   b) **Get Firebase Credentials:**
+   ```
+   1. Go to Project Settings (gear icon)
+   2. Under "General" tab:
+      - Copy "Project ID"
+      - Scroll down to "Your apps" section
+      - If no web app exists, click "Add app" → Web
+      - Copy the "Web API Key" (apiKey field)
+   ```
+   
+   c) **Configure in Yourlit:**
+   ```
+   1. Go to Settings in the app
+   2. Under "Storage Type" select "Cloud Storage (Firestore)"
+   3. Enter your Firebase API Key
+   4. Enter your Firebase Project ID
+   5. Your data will now sync to the cloud!
+   ```
+   
+   d) **Security Rules (Important):**
+   ```javascript
+   // In Firebase Console → Firestore → Rules, use:
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       // Allow read/write for all documents (adjust for your needs)
+       match /{document=**} {
+         allow read, write: if true;
+       }
+     }
+   }
+   ```
+   ⚠️ **Note**: The above rules allow anyone to read/write. For production, implement proper authentication.
+
+3. **Environment Variables** (Optional)
    Create a `.env.local` file for default settings:
    ```env
    # Not required - settings are managed in-app
@@ -183,7 +239,25 @@ yourlit/
 
 ## Data Storage
 
-### Local Storage Structure
+### Storage Options
+
+**1. Local Storage (Default)**
+- Data stored in browser localStorage
+- No setup required
+- Private and offline
+- No sync across devices
+- No external dependencies
+
+**2. Cloud Storage (Firestore)**
+- Data stored in Google Firestore
+- Syncs across devices
+- Requires Firebase setup
+- Online connectivity required
+- Automatic fallback to localStorage on errors
+
+### Storage Structure
+
+**Local Storage:**
 ```javascript
 // Story trees
 'story-trees': [{ id, title, createdAt, lastModified }]
@@ -194,12 +268,23 @@ yourlit/
 'story-drafts': [Draft[]]
 'generated-stories': [StoryVersion[]]
 
-// Settings
+// Settings (always local for security)
 'openai-api-key': string
 'gemini-api-key': string
+'firebase-api-key': string
+'firebase-project-id': string
+'storage-type': 'localStorage' | 'firestore'
 'ai-provider': 'openai' | 'gemini' 
 'response-language': string
 // ... other settings
+```
+
+**Firestore Collections:**
+```javascript
+// Collections in Firestore
+trees/          // Individual tree metadata
+tree-nodes/     // Tree node data by tree ID
+user-data/      // story-drafts and settings documents
 ```
 
 ### Data Cleanup
@@ -207,6 +292,7 @@ yourlit/
 - Manual cleanup available via UI
 - Duplicate detection and removal
 - Orphaned data cleanup
+- Cross-storage migration support
 
 ## Contributing
 
@@ -242,6 +328,9 @@ yourlit/
 
 2. **Stories Not Saving**
    - Check browser localStorage permissions
+   - If using Firestore, verify Firebase configuration
+   - Check internet connectivity (for Firestore)
+   - Try switching storage type in Settings
    - Try the "Cleanup" function
    - Check browser console for errors
 
@@ -249,6 +338,14 @@ yourlit/
    - Use "Debug" button to inspect tree structure
    - Try "Cleanup" to fix data corruption
    - Check for circular references in console
+   - If using Firestore, check Firebase Console for data
+
+4. **Firestore Connection Issues**
+   - Verify Firebase API key and Project ID in Settings
+   - Check if Firestore is enabled in Firebase Console
+   - Verify Firestore security rules allow read/write
+   - Check browser console for Firebase errors
+   - Try switching back to localStorage temporarily
 
 ### Debug Features
 - Debug button shows current tree structure

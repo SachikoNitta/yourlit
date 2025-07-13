@@ -5,6 +5,9 @@ const AI_PROVIDER_STORAGE_KEY = 'ai-provider'
 const RESPONSE_LANGUAGE_STORAGE_KEY = 'response-language'
 const DEFAULT_NUM_ANSWERS_STORAGE_KEY = 'default-num-answers'
 const DEFAULT_RESPONSE_LENGTH_STORAGE_KEY = 'default-response-length'
+const STORAGE_TYPE_STORAGE_KEY = 'storage-type'
+const FIREBASE_API_KEY_STORAGE_KEY = 'firebase-api-key'
+const FIREBASE_PROJECT_ID_STORAGE_KEY = 'firebase-project-id'
 
 // Language options for responses
 export const LANGUAGES = [
@@ -29,6 +32,9 @@ export interface AppSettings {
   responseLanguage: string
   defaultNumAnswers: number
   defaultResponseLength: 'short' | 'medium' | 'long'
+  storageType: 'localStorage' | 'firestore'
+  firebaseApiKey: string
+  firebaseProjectId: string
 }
 
 export const getDefaultSettings = (): AppSettings => ({
@@ -37,7 +43,10 @@ export const getDefaultSettings = (): AppSettings => ({
   aiProvider: 'openai',
   responseLanguage: 'en',
   defaultNumAnswers: 3,
-  defaultResponseLength: 'medium'
+  defaultResponseLength: 'medium',
+  storageType: 'localStorage',
+  firebaseApiKey: '',
+  firebaseProjectId: ''
 })
 
 export const loadSettings = (): AppSettings => {
@@ -51,7 +60,10 @@ export const loadSettings = (): AppSettings => {
     aiProvider: (localStorage.getItem(AI_PROVIDER_STORAGE_KEY) as 'openai' | 'gemini') || 'openai',
     responseLanguage: localStorage.getItem(RESPONSE_LANGUAGE_STORAGE_KEY) || 'en',
     defaultNumAnswers: parseInt(localStorage.getItem(DEFAULT_NUM_ANSWERS_STORAGE_KEY) || '3'),
-    defaultResponseLength: (localStorage.getItem(DEFAULT_RESPONSE_LENGTH_STORAGE_KEY) as 'short' | 'medium' | 'long') || 'medium'
+    defaultResponseLength: (localStorage.getItem(DEFAULT_RESPONSE_LENGTH_STORAGE_KEY) as 'short' | 'medium' | 'long') || 'medium',
+    storageType: (localStorage.getItem(STORAGE_TYPE_STORAGE_KEY) as 'localStorage' | 'firestore') || 'localStorage',
+    firebaseApiKey: localStorage.getItem(FIREBASE_API_KEY_STORAGE_KEY) || '',
+    firebaseProjectId: localStorage.getItem(FIREBASE_PROJECT_ID_STORAGE_KEY) || ''
   }
 }
 
@@ -75,6 +87,15 @@ export const saveSettings = (settings: Partial<AppSettings>): void => {
   }
   if (settings.defaultResponseLength !== undefined) {
     localStorage.setItem(DEFAULT_RESPONSE_LENGTH_STORAGE_KEY, settings.defaultResponseLength)
+  }
+  if (settings.storageType !== undefined) {
+    localStorage.setItem(STORAGE_TYPE_STORAGE_KEY, settings.storageType)
+  }
+  if (settings.firebaseApiKey !== undefined) {
+    localStorage.setItem(FIREBASE_API_KEY_STORAGE_KEY, settings.firebaseApiKey)
+  }
+  if (settings.firebaseProjectId !== undefined) {
+    localStorage.setItem(FIREBASE_PROJECT_ID_STORAGE_KEY, settings.firebaseProjectId)
   }
 }
 
