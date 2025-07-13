@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { TreeNodeComponent } from './TreeNodeComponent'
 import { SimpleTreeNodeComponent } from './SimpleTreeNodeComponent'
 import { ActivityBar } from '@/components/ActivityBar'
 import { SettingsPage } from '@/components/SettingsPage'
@@ -33,8 +32,8 @@ function InitialQuestionForm({ onSubmit }: { onSubmit: (question: string) => voi
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Start Your AI Story Tree</h2>
-        <p className="text-gray-600 mb-8">Ask a question or start a conversation to begin exploring different paths.</p>
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Start Your Simple Story Tree</h2>
+        <p className="text-gray-600 mb-8">Ask a question or start a story, then use "Like & Continue" to grow it.</p>
         
         <div className="max-w-md mx-auto space-y-4">
           <Input
@@ -49,7 +48,7 @@ function InitialQuestionForm({ onSubmit }: { onSubmit: (question: string) => voi
             className="w-full"
           >
             <Send className="w-4 h-4 mr-2" />
-            Start Story Tree
+            Start Simple Story Tree
           </Button>
         </div>
       </div>
@@ -57,7 +56,7 @@ function InitialQuestionForm({ onSubmit }: { onSubmit: (question: string) => voi
   )
 }
 
-export default function Component() {
+export default function SimpleTreeEditor() {
   const [nodes, setNodes] = useState<TreeNode[]>([])
   const [settings, setSettings] = useState<AppSettings>({
     openaiKey: '',
@@ -71,30 +70,29 @@ export default function Component() {
   const [currentPage, setCurrentPage] = useState<'trees' | 'tree' | 'settings' | 'stories'>('trees')
   const [trees, setTrees] = useState<any[]>([])
   const [currentTreeId, setCurrentTreeId] = useState<string | null>(null)
-  const [editorMode, setEditorMode] = useState<'advanced' | 'simple'>('advanced')
 
   useEffect(() => {
     // Run cleanup on first load (only once per session)
-    const hasRunCleanup = sessionStorage.getItem('cleanup-run')
+    const hasRunCleanup = sessionStorage.getItem('simple-cleanup-run')
     if (!hasRunCleanup) {
       console.log('Running automatic localStorage cleanup...')
       cleanupAllTreeData()
-      sessionStorage.setItem('cleanup-run', 'true')
+      sessionStorage.setItem('simple-cleanup-run', 'true')
     }
     
     // Load trees from localStorage
-    const savedTrees = localStorage.getItem('story-trees')
+    const savedTrees = localStorage.getItem('simple-story-trees')
     if (savedTrees) {
       const parsedTrees = JSON.parse(savedTrees)
       setTrees(parsedTrees)
     }
     
     // Load current tree ID
-    const currentId = localStorage.getItem('current-tree-id')
+    const currentId = localStorage.getItem('simple-current-tree-id')
     if (currentId) {
       setCurrentTreeId(currentId)
       // Load nodes for current tree
-      const treeNodes = localStorage.getItem(`tree-${currentId}`)
+      const treeNodes = localStorage.getItem(`simple-tree-${currentId}`)
       if (treeNodes) {
         const parsedNodes = JSON.parse(treeNodes)
         // Deduplicate nodes when loading from localStorage
@@ -108,7 +106,7 @@ export default function Component() {
             deduplicatedCount: deduplicatedNodes.length
           })
           // Save the cleaned data back to localStorage
-          localStorage.setItem(`tree-${currentId}`, JSON.stringify(deduplicatedNodes))
+          localStorage.setItem(`simple-tree-${currentId}`, JSON.stringify(deduplicatedNodes))
         }
         
         setNodes(deduplicatedNodes.length > 0 ? deduplicatedNodes : [])
@@ -122,7 +120,7 @@ export default function Component() {
 
   useEffect(() => {
     if (isHydrated && currentTreeId) {
-      localStorage.setItem(`tree-${currentTreeId}`, JSON.stringify(nodes))
+      localStorage.setItem(`simple-tree-${currentTreeId}`, JSON.stringify(nodes))
     }
   }, [nodes, isHydrated, currentTreeId])
 
@@ -194,7 +192,6 @@ export default function Component() {
     )
   }
 
-
   // Manual cleanup function
   const runDataCleanup = () => {
     const beforeSummary = getStorageSummary()
@@ -223,7 +220,7 @@ export default function Component() {
     
     // Reload current tree data if available
     if (currentTreeId) {
-      const savedNodes = localStorage.getItem(`tree-${currentTreeId}`)
+      const savedNodes = localStorage.getItem(`simple-tree-${currentTreeId}`)
       if (savedNodes) {
         const parsedNodes = JSON.parse(savedNodes)
         const deduplicatedNodes = parsedNodes.filter((node: TreeNode, index: number, array: TreeNode[]) => 
@@ -237,7 +234,7 @@ export default function Component() {
   const rootNode = nodes.find(n => n.id === 'root')
 
   const createNewTree = async (question: string) => {
-    const treeId = `tree-${Date.now()}`
+    const treeId = `simple-tree-${Date.now()}`
     const newTree = {
       id: treeId,
       title: question.substring(0, 50) + (question.length > 50 ? '...' : ''),
@@ -247,10 +244,10 @@ export default function Component() {
     
     const updatedTrees = [newTree, ...trees]
     setTrees(updatedTrees)
-    localStorage.setItem('story-trees', JSON.stringify(updatedTrees))
+    localStorage.setItem('simple-story-trees', JSON.stringify(updatedTrees))
     
     setCurrentTreeId(treeId)
-    localStorage.setItem('current-tree-id', treeId)
+    localStorage.setItem('simple-current-tree-id', treeId)
     
     const rootNode: TreeNode = {
       id: 'root',
@@ -279,7 +276,7 @@ export default function Component() {
   }
 
   const createNewTreeFromText = async (title: string, text: string) => {
-    const treeId = `tree-${Date.now()}`
+    const treeId = `simple-tree-${Date.now()}`
     const newTree = {
       id: treeId,
       title: title,
@@ -289,10 +286,10 @@ export default function Component() {
     
     const updatedTrees = [newTree, ...trees]
     setTrees(updatedTrees)
-    localStorage.setItem('story-trees', JSON.stringify(updatedTrees))
+    localStorage.setItem('simple-story-trees', JSON.stringify(updatedTrees))
     
     setCurrentTreeId(treeId)
-    localStorage.setItem('current-tree-id', treeId)
+    localStorage.setItem('simple-current-tree-id', treeId)
     
     // Convert text to tree nodes
     const treeNodes = convertTextToTree(text, { title })
@@ -302,9 +299,9 @@ export default function Component() {
 
   const selectTree = (treeId: string) => {
     setCurrentTreeId(treeId)
-    localStorage.setItem('current-tree-id', treeId)
+    localStorage.setItem('simple-current-tree-id', treeId)
     
-    const treeNodes = localStorage.getItem(`tree-${treeId}`)
+    const treeNodes = localStorage.getItem(`simple-tree-${treeId}`)
     if (treeNodes) {
       const parsedNodes = JSON.parse(treeNodes)
       setNodes(parsedNodes)
@@ -318,13 +315,13 @@ export default function Component() {
   const deleteTree = (treeId: string) => {
     const updatedTrees = trees.filter(tree => tree.id !== treeId)
     setTrees(updatedTrees)
-    localStorage.setItem('story-trees', JSON.stringify(updatedTrees))
-    localStorage.removeItem(`tree-${treeId}`)
+    localStorage.setItem('simple-story-trees', JSON.stringify(updatedTrees))
+    localStorage.removeItem(`simple-tree-${treeId}`)
     
     if (currentTreeId === treeId) {
       setCurrentTreeId(null)
       setNodes([])
-      localStorage.removeItem('current-tree-id')
+      localStorage.removeItem('simple-current-tree-id')
     }
   }
 
@@ -363,24 +360,9 @@ export default function Component() {
             <div className="w-full">
               {/* Controls */}
               <div className="mb-6 flex gap-2 justify-between items-center">
-                <div className="flex gap-1 bg-muted p-1 rounded-md">
-                  <Button
-                    size="sm"
-                    variant={editorMode === 'advanced' ? "default" : "ghost"}
-                    onClick={() => setEditorMode('advanced')}
-                    className="h-7"
-                  >
-                    Advanced Editor
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={editorMode === 'simple' ? "default" : "ghost"}
-                    onClick={() => setEditorMode('simple')}
-                    className="h-7"
-                  >
-                    Simple Editor
-                  </Button>
-                </div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Simple Story Tree Editor
+                </h2>
                 <div className="flex gap-2">
                   <Button
                     size="sm"
@@ -414,39 +396,21 @@ export default function Component() {
                 </div>
               </div>
 
-              {editorMode === 'advanced' ? (
-                <TreeNodeComponent 
-                  node={rootNode} 
-                  level={0} 
-                  allNodes={nodes}
-                  openaiKey={settings.openaiKey}
-                  geminiKey={settings.geminiKey}
-                  aiProvider={settings.aiProvider}
-                  responseLanguage={settings.responseLanguage}
-                  defaultNumAnswers={settings.defaultNumAnswers}
-                  defaultResponseLength={settings.defaultResponseLength}
-                  onUpdateNode={updateNode} 
-                  onAddNodes={addNodes} 
-                  onDeleteNode={deleteNode}
-                  onClearQuestion={clearQuestion}
-                />
-              ) : (
-                <SimpleTreeNodeComponent 
-                  node={rootNode} 
-                  level={0} 
-                  allNodes={nodes}
-                  openaiKey={settings.openaiKey}
-                  geminiKey={settings.geminiKey}
-                  aiProvider={settings.aiProvider}
-                  responseLanguage={settings.responseLanguage}
-                  defaultNumAnswers={settings.defaultNumAnswers}
-                  defaultResponseLength={settings.defaultResponseLength}
-                  onUpdateNode={updateNode} 
-                  onAddNodes={addNodes} 
-                  onDeleteNode={deleteNode}
-                  onClearQuestion={clearQuestion}
-                />
-              )}
+              <SimpleTreeNodeComponent 
+                node={rootNode} 
+                level={0} 
+                allNodes={nodes}
+                openaiKey={settings.openaiKey}
+                geminiKey={settings.geminiKey}
+                aiProvider={settings.aiProvider}
+                responseLanguage={settings.responseLanguage}
+                defaultNumAnswers={settings.defaultNumAnswers}
+                defaultResponseLength={settings.defaultResponseLength}
+                onUpdateNode={updateNode} 
+                onAddNodes={addNodes} 
+                onDeleteNode={deleteNode}
+                onClearQuestion={clearQuestion}
+              />
             </div>
           )}
         </div>
