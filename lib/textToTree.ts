@@ -1,4 +1,4 @@
-import { TreeNode } from '../app/game-trees/types'
+import { TreeNode } from '../app/trees/types'
 
 export interface TextToTreeOptions {
   title?: string

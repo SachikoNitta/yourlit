@@ -4,8 +4,8 @@ import { useState } from "react"
 import { ChevronDown, ChevronRight, Plus, Send, Loader2, X, FileText, Save, Edit2, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { generateAnswers } from "../../actions"
-import { NodeProps, TreeNode } from './types'
+import { generateAnswers } from "@/actions"
+import { NodeProps, TreeNode } from '@/app/trees/types'
 
 export function TreeNodeComponent({ 
   node, 

@@ -9,7 +9,7 @@ import { VersionViewer } from "./drafts/VersionViewer"
 import { VersionsList } from "./drafts/VersionsList"
 import { VersionCreationModal } from "./drafts/VersionCreationModal"
 
-interface DraftsPageProps {
+interface StoriesPageProps {
   openaiKey: string
   geminiKey: string
   aiProvider: 'openai' | 'gemini'
@@ -17,13 +17,13 @@ interface DraftsPageProps {
   isHydrated: boolean
 }
 
-export function DraftsPage({
+export function StoriesPage({
   openaiKey,
   geminiKey,
   aiProvider,
   responseLanguage,
   isHydrated
-}: DraftsPageProps) {
+}: StoriesPageProps) {
   const [savedDrafts, setSavedDrafts] = useState<Draft[]>([])
   const [selectedDraft, setSelectedDraft] = useState<Draft | null>(null)
   const [selectedVersion, setSelectedVersion] = useState<StoryVersion | null>(null)

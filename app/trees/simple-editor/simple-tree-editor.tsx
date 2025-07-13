@@ -1,23 +1,23 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { SimpleTreeNodeComponent } from './SimpleTreeNodeComponent'
+import { SimpleTreeNodeComponent } from '@/app/trees/simple-editor/SimpleTreeNodeComponent'
 import { ActivityBar } from '@/components/ActivityBar'
 import { SettingsPage } from '@/components/SettingsPage'
-import { DraftsPage } from '@/components/DraftsPage'
+import { StoriesPage } from '@/components/StoriesPage'
 import { TreesPage } from '@/components/TreesPage'
-import { TreeNode } from './types'
+import { TreeNode } from '@/app/trees/types'
 import { 
   performFullCleanup, 
   getStorageSummary, 
   cleanupAllTreeData 
-} from './dataCleanup'
-import { generateAnswers } from '../../actions'
+} from '@/app/trees/dataCleanup'
+import { generateAnswers } from '@/actions'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Send } from "lucide-react"
-import { AppSettings, loadSettings, saveSettings, getApiKey } from '../../lib/settings'
-import { convertTextToTree } from '../../lib/textToTree'
+import { AppSettings, loadSettings, saveSettings, getApiKey } from '@/lib/settings'
+import { convertTextToTree } from '@/lib/textToTree'
 
 function InitialQuestionForm({ onSubmit }: { onSubmit: (question: string) => void }) {
   const [question, setQuestion] = useState("")
@@ -435,7 +435,7 @@ export default function SimpleTreeEditor() {
       )}
       
       {currentPage === 'stories' && (
-        <DraftsPage
+        <StoriesPage
           openaiKey={settings.openaiKey}
           geminiKey={settings.geminiKey}
           aiProvider={settings.aiProvider}

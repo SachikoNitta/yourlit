@@ -1,6 +1,6 @@
 "use server"
 
-import { LANGUAGES } from './app/game-trees/constants'
+import { LANGUAGES } from '@/lib/settings'
 
 function getLanguageName(languageCode: string): string {
   const language = LANGUAGES.find(lang => lang.code === languageCode)

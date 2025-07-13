@@ -137,7 +137,7 @@ Build rich, multi-path stories—each question you ask leads to new twists, outc
 ```
 yourlit/
 ├── app/
-│   ├── game-trees/           # Main story tree functionality
+│   ├── trees/           # Main story tree functionality
 │   │   ├── TreeNodeComponent.tsx    # Individual tree node rendering
 │   │   ├── ai-game-tree.tsx         # Main tree interface
 │   │   ├── types.ts                 # TypeScript interfaces
@@ -157,7 +157,7 @@ yourlit/
 │   ├── ActivityBar.tsx      # Main navigation
 │   ├── SettingsPage.tsx     # Settings interface
 │   ├── TreesPage.tsx        # Tree management
-│   └── DraftsPage.tsx       # Story management
+│   └── StoriesPage.tsx       # Story management
 ├── actions.ts               # Server actions for AI calls
 └── README.md
 ```

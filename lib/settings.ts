@@ -1,11 +1,26 @@
-import { 
-  OPENAI_API_KEY_STORAGE_KEY, 
-  GEMINI_API_KEY_STORAGE_KEY, 
-  AI_PROVIDER_STORAGE_KEY,
-  RESPONSE_LANGUAGE_STORAGE_KEY,
-  DEFAULT_NUM_ANSWERS_STORAGE_KEY,
-  DEFAULT_RESPONSE_LENGTH_STORAGE_KEY
-} from '../app/game-trees/constants'
+// Storage keys for settings
+const OPENAI_API_KEY_STORAGE_KEY = 'openai-api-key'
+const GEMINI_API_KEY_STORAGE_KEY = 'gemini-api-key'
+const AI_PROVIDER_STORAGE_KEY = 'ai-provider'
+const RESPONSE_LANGUAGE_STORAGE_KEY = 'response-language'
+const DEFAULT_NUM_ANSWERS_STORAGE_KEY = 'default-num-answers'
+const DEFAULT_RESPONSE_LENGTH_STORAGE_KEY = 'default-response-length'
+
+// Language options for responses
+export const LANGUAGES = [
+  { code: 'en', name: 'English' },
+  { code: 'es', name: 'Spanish' },
+  { code: 'fr', name: 'French' },
+  { code: 'de', name: 'German' },
+  { code: 'it', name: 'Italian' },
+  { code: 'pt', name: 'Portuguese' },
+  { code: 'ru', name: 'Russian' },
+  { code: 'ja', name: 'Japanese' },
+  { code: 'ko', name: 'Korean' },
+  { code: 'zh', name: 'Chinese' },
+  { code: 'ar', name: 'Arabic' },
+  { code: 'hi', name: 'Hindi' },
+]
 
 export interface AppSettings {
   openaiKey: string

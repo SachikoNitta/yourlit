@@ -1,7 +1,7 @@
 "use client"
 
 import { Input } from "@/components/ui/input"
-import { LANGUAGES } from "@/app/game-trees/constants"
+import { LANGUAGES } from "@/lib/settings"
 
 interface SettingsPageProps {
   openaiKey: string
