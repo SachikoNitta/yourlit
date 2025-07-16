@@ -135,7 +135,6 @@ export function StoriesPage({
             onGoBack={() => setSelectedVersion(null)}
             onDelete={handleDeleteVersion}
             onCopyToClipboard={handleCopyToClipboard}
-            onExtractCharacters={() => handleExtractCharacters(selectedVersion.content, selectedVersion.title)}
           />
         ) : selectedDraft ? (
           <>

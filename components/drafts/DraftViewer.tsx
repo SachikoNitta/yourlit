@@ -2,6 +2,7 @@ import { Trash2, Wand2, User } from "lucide-react"
 import { Button } from "../ui/button"
 import { Draft } from "../../lib/draftsStorage"
 import { dateUtils } from "../../lib/dateUtils"
+import { StoryCharactersList } from "../story-characters/StoryCharactersList"
 
 interface DraftViewerProps {
   draft: Draft
@@ -77,6 +78,8 @@ export function DraftViewer({
           Copy to Clipboard
         </Button>
       </div>
+      
+      <StoryCharactersList storyId={draft.id} />
     </div>
   )
 }

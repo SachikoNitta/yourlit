@@ -246,12 +246,23 @@ export class LocalStorageCharacterRepository implements CharacterRepository {
   private readonly CHARACTERS_KEY = 'story-characters'
 
   async createCharacter(character: Omit<Character, 'id'>): Promise<Character> {
+    const characters = await this.getAllCharacters()
+    let newId: string
+    let attempts = 0
+    
+    // Generate unique ID, retry if collision detected
+    do {
+      const timestamp = Date.now() + attempts
+      const random = Math.floor(Math.random() * 1000)
+      newId = `character-${timestamp}-${random}`
+      attempts++
+    } while (characters.some(c => c.id === newId) && attempts < 10)
+    
     const newCharacter: Character = {
       ...character,
-      id: `character-${Date.now()}`
+      id: newId
     }
 
-    const characters = await this.getAllCharacters()
     const updatedCharacters = [newCharacter, ...characters]
     localStorage.setItem(this.CHARACTERS_KEY, JSON.stringify(updatedCharacters))
     

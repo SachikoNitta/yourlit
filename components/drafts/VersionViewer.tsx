@@ -1,4 +1,4 @@
-import { Trash2, User } from "lucide-react"
+import { Trash2 } from "lucide-react"
 import { Button } from "../ui/button"
 import { StoryVersion } from "../../lib/draftsStorage"
 import { dateUtils } from "../../lib/dateUtils"
@@ -8,15 +8,13 @@ interface VersionViewerProps {
   onGoBack: () => void
   onDelete: (versionId: string) => void
   onCopyToClipboard: (content: string) => void
-  onExtractCharacters?: () => void
 }
 
 export function VersionViewer({ 
   version, 
   onGoBack, 
   onDelete, 
-  onCopyToClipboard,
-  onExtractCharacters
+  onCopyToClipboard
 }: VersionViewerProps) {
   return (
     <div className="space-y-6">
@@ -58,16 +56,6 @@ export function VersionViewer({
       </div>
       
       <div className="flex gap-3">
-        {onExtractCharacters && (
-          <Button
-            onClick={onExtractCharacters}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <User size={16} />
-            Extract Characters
-          </Button>
-        )}
         <Button onClick={() => onCopyToClipboard(version.content)}>
           Copy to Clipboard
         </Button>
