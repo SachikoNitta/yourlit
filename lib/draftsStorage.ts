@@ -42,6 +42,17 @@ export const draftsStorage = {
     return updatedDrafts
   },
 
+  updateDraft(draftId: string, updates: Partial<Omit<Draft, 'id'>>): Draft[] {
+    const drafts = this.loadDrafts()
+    const updatedDrafts = drafts.map(draft => 
+      draft.id === draftId 
+        ? { ...draft, ...updates }
+        : draft
+    )
+    this.saveDrafts(updatedDrafts)
+    return updatedDrafts
+  },
+
   // Story version operations
   loadVersions(): StoryVersion[] {
     try {
@@ -78,5 +89,21 @@ export const draftsStorage = {
   getVersionsForDraft(draftId: string): StoryVersion[] {
     const allVersions = this.loadVersions()
     return allVersions.filter(version => version.originalDraftId === draftId)
+  },
+
+  updateVersion(versionId: string, updates: Partial<Omit<StoryVersion, 'id'>>): StoryVersion[] {
+    const versions = this.loadVersions()
+    const updatedVersions = versions.map(version => 
+      version.id === versionId 
+        ? { ...version, ...updates }
+        : version
+    )
+    this.saveVersions(updatedVersions)
+    return updatedVersions
+  },
+
+  getVersion(versionId: string): StoryVersion | null {
+    const versions = this.loadVersions()
+    return versions.find(version => version.id === versionId) || null
   }
 }

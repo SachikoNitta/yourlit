@@ -64,6 +64,31 @@ export function StoriesPage({
     }
   }
 
+  const handleUpdateDraft = (draftId: string, updates: { title?: string; content?: string }) => {
+    const updatedDrafts = draftsStorage.updateDraft(draftId, updates)
+    setSavedDrafts(updatedDrafts)
+    
+    // Update selectedDraft if it's the one being edited
+    if (selectedDraft?.id === draftId) {
+      const updatedDraft = updatedDrafts.find(d => d.id === draftId)
+      if (updatedDraft) {
+        setSelectedDraft(updatedDraft)
+      }
+    }
+  }
+
+  const handleUpdateVersion = (versionId: string, updates: { title?: string; content?: string; prompt?: string }) => {
+    draftsStorage.updateVersion(versionId, updates)
+    
+    // Update selectedVersion if it's the one being edited
+    if (selectedVersion?.id === versionId) {
+      const updatedVersion = draftsStorage.getVersion(versionId)
+      if (updatedVersion) {
+        setSelectedVersion(updatedVersion)
+      }
+    }
+  }
+
   const handleGenerateVersion = async (instructions: string) => {
     if (!selectedDraft) return
     
@@ -135,6 +160,7 @@ export function StoriesPage({
             onGoBack={() => setSelectedVersion(null)}
             onDelete={handleDeleteVersion}
             onCopyToClipboard={handleCopyToClipboard}
+            onUpdateVersion={handleUpdateVersion}
           />
         ) : selectedDraft ? (
           <>
@@ -145,6 +171,7 @@ export function StoriesPage({
               onCreateVersion={() => setShowVersionModal(true)}
               onCopyToClipboard={handleCopyToClipboard}
               onExtractCharacters={() => handleExtractCharacters(selectedDraft.content, selectedDraft.title)}
+              onUpdateDraft={handleUpdateDraft}
             />
             
             <div className="mt-8">
