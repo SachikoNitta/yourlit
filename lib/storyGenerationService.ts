@@ -12,6 +12,7 @@ export interface GenerationParams {
 export const storyGenerationService = {
   async generateVersion(
     draft: Draft,
+    
     instructions: string,
     params: GenerationParams
   ): Promise<StoryVersion> {
@@ -21,7 +22,6 @@ export const storyGenerationService = {
       aiProvider: params.aiProvider,
       responseLanguage: params.responseLanguage,
       defaultNumAnswers: 3,
-      defaultResponseLength: 'medium'
     })
 
     console.log('🎨 Starting story version generation:', {

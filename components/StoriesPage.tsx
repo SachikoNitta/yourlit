@@ -8,6 +8,10 @@ import { DraftViewer } from "./drafts/DraftViewer"
 import { VersionViewer } from "./drafts/VersionViewer"
 import { VersionsList } from "./drafts/VersionsList"
 import { VersionCreationModal } from "./drafts/VersionCreationModal"
+import { CharacterExtractionDialog } from "./character-extraction/CharacterExtractionDialog"
+import { CharacterExtractionResult } from "@/lib/services/characterService"
+import { getServiceManager } from "@/lib/services"
+import { loadSettings } from "@/lib/settings"
 
 interface StoriesPageProps {
   openaiKey: string
@@ -29,6 +33,9 @@ export function StoriesPage({
   const [selectedVersion, setSelectedVersion] = useState<StoryVersion | null>(null)
   const [isGeneratingStory, setIsGeneratingStory] = useState(false)
   const [showVersionModal, setShowVersionModal] = useState(false)
+  const [showCharacterExtractionDialog, setShowCharacterExtractionDialog] = useState(false)
+  const [extractionContent, setExtractionContent] = useState('')
+  const [extractionTitle, setExtractionTitle] = useState('')
 
   useEffect(() => {
     if (isHydrated) {
@@ -88,6 +95,32 @@ export function StoriesPage({
     navigator.clipboard.writeText(content)
   }
 
+  const handleExtractCharacters = (content: string, title: string) => {
+    setExtractionContent(content)
+    setExtractionTitle(title)
+    setShowCharacterExtractionDialog(true)
+  }
+
+  const performCharacterExtraction = async (content: string): Promise<CharacterExtractionResult> => {
+    const settings = loadSettings()
+    const serviceManager = getServiceManager(settings)
+    const characterService = serviceManager.characters
+    
+    const extractionParams = {
+      openaiKey,
+      geminiKey,
+      aiProvider,
+      responseLanguage
+    }
+    
+    return await characterService.extractCharactersFromStory(
+      content,
+      extractionParams,
+      selectedDraft?.id,
+      selectedDraft?.nodeId
+    )
+  }
+
   const getVersionsForCurrentDraft = (): StoryVersion[] => {
     if (!selectedDraft) return []
     return draftsStorage.getVersionsForDraft(selectedDraft.id)
@@ -102,6 +135,7 @@ export function StoriesPage({
             onGoBack={() => setSelectedVersion(null)}
             onDelete={handleDeleteVersion}
             onCopyToClipboard={handleCopyToClipboard}
+            onExtractCharacters={() => handleExtractCharacters(selectedVersion.content, selectedVersion.title)}
           />
         ) : selectedDraft ? (
           <>
@@ -111,6 +145,7 @@ export function StoriesPage({
               onDelete={handleDeleteDraft}
               onCreateVersion={() => setShowVersionModal(true)}
               onCopyToClipboard={handleCopyToClipboard}
+              onExtractCharacters={() => handleExtractCharacters(selectedDraft.content, selectedDraft.title)}
             />
             
             <div className="mt-8">
@@ -140,6 +175,14 @@ export function StoriesPage({
         isGenerating={isGeneratingStory}
         onClose={() => setShowVersionModal(false)}
         onGenerate={handleGenerateVersion}
+      />
+      
+      <CharacterExtractionDialog
+        isOpen={showCharacterExtractionDialog}
+        onClose={() => setShowCharacterExtractionDialog(false)}
+        onExtract={performCharacterExtraction}
+        content={extractionContent}
+        title={extractionTitle}
       />
     </div>
   )

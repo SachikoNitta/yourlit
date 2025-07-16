@@ -4,11 +4,13 @@ import {
   TreeRepository, 
   StoryRepository, 
   UserRepository, 
+  CharacterRepository,
   TreeData, 
   TreeNode, 
   StoryDraft, 
   StoryVersion, 
-  UserPreferences 
+  UserPreferences,
+  Character
 } from './types'
 
 export class LocalStorageTreeRepository implements TreeRepository {
@@ -237,5 +239,64 @@ export class LocalStorageUserRepository implements UserRepository {
 
   async clearCurrentTreeId(): Promise<void> {
     localStorage.removeItem(this.CURRENT_TREE_KEY)
+  }
+}
+
+export class LocalStorageCharacterRepository implements CharacterRepository {
+  private readonly CHARACTERS_KEY = 'story-characters'
+
+  async createCharacter(character: Omit<Character, 'id'>): Promise<Character> {
+    const newCharacter: Character = {
+      ...character,
+      id: `character-${Date.now()}`
+    }
+
+    const characters = await this.getAllCharacters()
+    const updatedCharacters = [newCharacter, ...characters]
+    localStorage.setItem(this.CHARACTERS_KEY, JSON.stringify(updatedCharacters))
+    
+    return newCharacter
+  }
+
+  async getCharacter(id: string): Promise<Character | null> {
+    const characters = await this.getAllCharacters()
+    return characters.find(character => character.id === id) || null
+  }
+
+  async getAllCharacters(): Promise<Character[]> {
+    const charactersData = localStorage.getItem(this.CHARACTERS_KEY)
+    return charactersData ? JSON.parse(charactersData) : []
+  }
+
+  async updateCharacter(id: string, updates: Partial<Character>): Promise<void> {
+    const characters = await this.getAllCharacters()
+    const updatedCharacters = characters.map(character => 
+      character.id === id ? { ...character, ...updates } : character
+    )
+    localStorage.setItem(this.CHARACTERS_KEY, JSON.stringify(updatedCharacters))
+  }
+
+  async deleteCharacter(id: string): Promise<void> {
+    const characters = await this.getAllCharacters()
+    const updatedCharacters = characters.filter(character => character.id !== id)
+    localStorage.setItem(this.CHARACTERS_KEY, JSON.stringify(updatedCharacters))
+  }
+
+  async getCharactersBySourceStory(storyId: string): Promise<Character[]> {
+    const characters = await this.getAllCharacters()
+    return characters.filter(character => character.sourceStoryId === storyId)
+  }
+
+  async searchCharacters(query: string): Promise<Character[]> {
+    const characters = await this.getAllCharacters()
+    const lowerQuery = query.toLowerCase()
+    
+    return characters.filter(character => 
+      character.name.toLowerCase().includes(lowerQuery) ||
+      character.description.toLowerCase().includes(lowerQuery) ||
+      character.traits.some(trait => trait.toLowerCase().includes(lowerQuery)) ||
+      (character.appearance && character.appearance.toLowerCase().includes(lowerQuery)) ||
+      (character.backstory && character.backstory.toLowerCase().includes(lowerQuery))
+    )
   }
 }

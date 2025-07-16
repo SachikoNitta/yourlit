@@ -1,17 +1,19 @@
 "use client"
 
-import { Settings, FileText, Trees } from "lucide-react"
+import { Settings, FileText, Trees, User } from "lucide-react"
 
 interface ActivityBarProps {
   onShowTrees?: () => void
   onShowSettings?: () => void
   onShowStories?: () => void
+  onShowCharacters?: () => void
 }
 
 export function ActivityBar({
   onShowTrees,
   onShowSettings,
-  onShowStories
+  onShowStories,
+  onShowCharacters
 }: ActivityBarProps) {
 
 
@@ -29,6 +31,12 @@ export function ActivityBar({
           className="p-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors"
         >
           <FileText size={20} />
+        </button>
+        <button
+          onClick={onShowCharacters}
+          className="p-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors"
+        >
+          <User size={20} />
         </button>
         <button
           onClick={onShowSettings}

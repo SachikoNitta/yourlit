@@ -1,17 +1,19 @@
 // Repository factory to create appropriate repository implementations
 
 import { AppSettings } from '../settings'
-import { initializeFirebase, isFirebaseInitialized } from '../firestore'
+import { initializeFirebase, isFirebaseInitialized } from './firestore'
 import { 
   RepositoryFactory, 
   TreeRepository, 
   StoryRepository, 
-  UserRepository 
+  UserRepository,
+  CharacterRepository
 } from './types'
 import { 
   LocalStorageTreeRepository, 
   LocalStorageStoryRepository, 
-  LocalStorageUserRepository 
+  LocalStorageUserRepository,
+  LocalStorageCharacterRepository
 } from './localStorage'
 import { 
   FirestoreTreeRepository, 
@@ -50,6 +52,16 @@ export class ConcreteRepositoryFactory implements RepositoryFactory {
       console.warn('Firestore not available, falling back to localStorage for user data')
     }
     return new LocalStorageUserRepository()
+  }
+
+  createCharacterRepository(): CharacterRepository {
+    if (this.settings.storageType === 'firestore') {
+      if (this.ensureFirestoreInitialized()) {
+        // TODO: Implement FirestoreCharacterRepository
+        console.warn('Firestore character repository not implemented, falling back to localStorage')
+      }
+    }
+    return new LocalStorageCharacterRepository()
   }
 
   private ensureFirestoreInitialized(): boolean {
@@ -107,6 +119,10 @@ export class RepositoryManager {
 
   get user(): UserRepository {
     return this.factory.createUserRepository()
+  }
+
+  get characters(): CharacterRepository {
+    return this.factory.createCharacterRepository()
   }
 
   // Update settings and recreate repositories if needed

@@ -143,7 +143,7 @@ export async function generateStoryVersion(
   provider: 'openai' | 'gemini' = 'openai'
 ): Promise<string> {
   // Use a generous token limit and let the AI follow the user's instructions
-  const tokens = 1000
+  const tokens = 3000
   
   // Use OpenAI API if API key is provided
   if (apiKey && provider === 'openai' && apiKey.startsWith('sk-')) {

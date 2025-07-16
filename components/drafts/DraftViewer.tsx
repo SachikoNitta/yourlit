@@ -1,4 +1,4 @@
-import { Trash2, Wand2 } from "lucide-react"
+import { Trash2, Wand2, User } from "lucide-react"
 import { Button } from "../ui/button"
 import { Draft } from "../../lib/draftsStorage"
 import { dateUtils } from "../../lib/dateUtils"
@@ -9,6 +9,7 @@ interface DraftViewerProps {
   onDelete: (draftId: string) => void
   onCreateVersion: () => void
   onCopyToClipboard: (content: string) => void
+  onExtractCharacters?: () => void
 }
 
 export function DraftViewer({ 
@@ -16,7 +17,8 @@ export function DraftViewer({
   onGoBack, 
   onDelete, 
   onCreateVersion, 
-  onCopyToClipboard 
+  onCopyToClipboard,
+  onExtractCharacters
 }: DraftViewerProps) {
   return (
     <div className="space-y-6">
@@ -58,6 +60,16 @@ export function DraftViewer({
           <Wand2 size={16} />
           Create Version
         </Button>
+        {onExtractCharacters && (
+          <Button
+            onClick={onExtractCharacters}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <User size={16} />
+            Extract Characters
+          </Button>
+        )}
         <Button
           onClick={() => onCopyToClipboard(draft.content)}
           variant="outline"

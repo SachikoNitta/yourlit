@@ -34,6 +34,19 @@ export interface StoryVersion {
   createdAt: string
 }
 
+export interface Character {
+  id: string
+  name: string
+  description: string
+  traits: string[]
+  appearance?: string
+  backstory?: string
+  sourceStoryId?: string
+  sourceNodeId?: string
+  createdAt: string
+  lastModified: string
+}
+
 export interface UserPreferences {
   currentTreeId?: string
   editorMode?: 'advanced' | 'simple'
@@ -74,6 +87,17 @@ export interface StoryRepository {
   deleteVersion(id: string): Promise<void>
 }
 
+export interface CharacterRepository {
+  // Character operations
+  createCharacter(character: Omit<Character, 'id'>): Promise<Character>
+  getCharacter(id: string): Promise<Character | null>
+  getAllCharacters(): Promise<Character[]>
+  updateCharacter(id: string, updates: Partial<Character>): Promise<void>
+  deleteCharacter(id: string): Promise<void>
+  getCharactersBySourceStory(storyId: string): Promise<Character[]>
+  searchCharacters(query: string): Promise<Character[]>
+}
+
 export interface UserRepository {
   // User preferences operations
   getPreferences(): Promise<UserPreferences>
@@ -87,4 +111,5 @@ export interface RepositoryFactory {
   createTreeRepository(): TreeRepository
   createStoryRepository(): StoryRepository
   createUserRepository(): UserRepository
+  createCharacterRepository(): CharacterRepository
 }
