@@ -1,7 +1,7 @@
 // Character service for managing character extraction and storage
 
 import { CharacterRepository, Character } from '../repositories/types'
-import { characterExtractionService, CharacterExtractionParams } from '../characterExtractionService'
+import { characterExtractionService, CharacterExtractionParams } from '../ai'
 
 export interface CharacterExtractionResult {
   characters: Character[]

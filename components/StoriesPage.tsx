@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Draft, StoryVersion, draftsStorage } from "../lib/draftsStorage"
-import { storyGenerationService, GenerationParams } from "../lib/storyGenerationService"
+import { storyGenerationService, GenerationParams } from "../lib/ai"
 import { DraftsList } from "./drafts/DraftsList"
 import { DraftViewer } from "./drafts/DraftViewer"
 import { VersionViewer } from "./drafts/VersionViewer"
