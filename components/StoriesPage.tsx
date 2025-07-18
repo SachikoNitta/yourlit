@@ -8,10 +8,11 @@ import { DraftViewer } from "./drafts/DraftViewer"
 import { VersionViewer } from "./drafts/VersionViewer"
 import { VersionsList } from "./drafts/VersionsList"
 import { VersionCreationModal } from "./drafts/VersionCreationModal"
+import { VersionEditor } from "./drafts/VersionEditor"
 import { CharacterExtractionDialog } from "./character-extraction/CharacterExtractionDialog"
 import { CharacterExtractionResult } from "@/lib/services/characterService"
 import { getServiceManager } from "@/lib/services"
-import { loadSettings } from "@/lib/settings"
+import { loadSettings, AppSettings } from "@/lib/settings"
 
 interface StoriesPageProps {
   openaiKey: string
@@ -33,13 +34,16 @@ export function StoriesPage({
   const [selectedVersion, setSelectedVersion] = useState<StoryVersion | null>(null)
   const [isGeneratingStory, setIsGeneratingStory] = useState(false)
   const [showVersionModal, setShowVersionModal] = useState(false)
+  const [showVersionEditor, setShowVersionEditor] = useState(false)
   const [showCharacterExtractionDialog, setShowCharacterExtractionDialog] = useState(false)
   const [extractionContent, setExtractionContent] = useState('')
   const [extractionTitle, setExtractionTitle] = useState('')
+  const [settings, setSettings] = useState<AppSettings | null>(null)
 
   useEffect(() => {
     if (isHydrated) {
       loadData()
+      setSettings(loadSettings())
     }
   }, [isHydrated])
 
@@ -154,7 +158,21 @@ export function StoriesPage({
   return (
     <div className="ml-12 w-[calc(100vw-3rem)] p-6">
       <div className="w-full">
-        {selectedVersion ? (
+        {showVersionEditor && selectedDraft ? (
+          <VersionEditor
+            draft={selectedDraft}
+            onGoBack={() => setShowVersionEditor(false)}
+            onSaveVersion={(version) => {
+              draftsStorage.addVersion(version)
+              loadData() // Reload data to show the new version
+            }}
+            onCopyToClipboard={handleCopyToClipboard}
+            openaiKey={openaiKey}
+            geminiKey={geminiKey}
+            aiProvider={aiProvider}
+            responseLanguage={responseLanguage}
+          />
+        ) : selectedVersion ? (
           <VersionViewer
             version={selectedVersion}
             onGoBack={() => setSelectedVersion(null)}
@@ -169,9 +187,11 @@ export function StoriesPage({
               onGoBack={() => setSelectedDraft(null)}
               onDelete={handleDeleteDraft}
               onCreateVersion={() => setShowVersionModal(true)}
+              onCreateVersionAdvanced={() => setShowVersionEditor(true)}
               onCopyToClipboard={handleCopyToClipboard}
               onExtractCharacters={() => handleExtractCharacters(selectedDraft.content, selectedDraft.title)}
               onUpdateDraft={handleUpdateDraft}
+              settings={settings || undefined}
             />
             
             <div className="mt-8">

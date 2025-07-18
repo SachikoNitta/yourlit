@@ -1,20 +1,24 @@
 import { useState } from "react"
-import { Trash2, Wand2, User, Edit, Save, X } from "lucide-react"
+import { Trash2, Wand2, User, Edit, Save, X, TreePine, FileText } from "lucide-react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Textarea } from "../ui/textarea"
 import { Draft } from "../../lib/draftsStorage"
 import { dateUtils } from "../../lib/dateUtils"
 import { StoryCharactersList } from "../story-characters/StoryCharactersList"
+import { TreeDraftEditor } from "./TreeDraftEditor"
+import { AppSettings } from "../../lib/settings"
 
 interface DraftViewerProps {
   draft: Draft
   onGoBack: () => void
   onDelete: (draftId: string) => void
   onCreateVersion: () => void
+  onCreateVersionAdvanced?: () => void
   onCopyToClipboard: (content: string) => void
   onExtractCharacters?: () => void
   onUpdateDraft?: (draftId: string, updates: { title?: string; content?: string }) => void
+  settings?: AppSettings
 }
 
 export function DraftViewer({ 
@@ -22,11 +26,14 @@ export function DraftViewer({
   onGoBack, 
   onDelete, 
   onCreateVersion, 
+  onCreateVersionAdvanced,
   onCopyToClipboard,
   onExtractCharacters,
-  onUpdateDraft
+  onUpdateDraft,
+  settings
 }: DraftViewerProps) {
   const [isEditing, setIsEditing] = useState(false)
+  const [editingMode, setEditingMode] = useState<'text' | 'tree'>('text')
   const [editTitle, setEditTitle] = useState(draft.title)
   const [editContent, setEditContent] = useState(draft.content)
 
@@ -56,13 +63,30 @@ export function DraftViewer({
         </button>
         <div className="flex items-center gap-2">
           {onUpdateDraft && (
-            <button
-              onClick={() => setIsEditing(!isEditing)}
-              className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded"
-              title={isEditing ? "Cancel edit" : "Edit story"}
-            >
-              {isEditing ? <X size={16} /> : <Edit size={16} />}
-            </button>
+            <>
+              <button
+                onClick={() => {
+                  setEditingMode('text')
+                  setIsEditing(!isEditing)
+                }}
+                className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded"
+                title={isEditing ? "Cancel edit" : "Edit story (text)"}
+              >
+                {isEditing ? <X size={16} /> : <Edit size={16} />}
+              </button>
+              {settings && (
+                <button
+                  onClick={() => {
+                    setEditingMode('tree')
+                    setIsEditing(!isEditing)
+                  }}
+                  className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded"
+                  title={isEditing ? "Cancel edit" : "Edit story (tree)"}
+                >
+                  <TreePine size={16} />
+                </button>
+              )}
+            </>
           )}
           <button
             onClick={() => onDelete(draft.id)}
@@ -76,39 +100,48 @@ export function DraftViewer({
       
       <div>
         {isEditing ? (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Title
-              </label>
-              <Input
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-                className="text-2xl font-bold"
-                placeholder="Story title"
-              />
+          editingMode === 'tree' && settings ? (
+            <TreeDraftEditor
+              draft={draft}
+              onSave={onUpdateDraft!}
+              onCancel={handleCancel}
+              settings={settings}
+            />
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Title
+                </label>
+                <Input
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="text-2xl font-bold"
+                  placeholder="Story title"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Content
+                </label>
+                <Textarea
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  className="min-h-[400px] text-sm leading-relaxed font-mono"
+                  placeholder="Story content"
+                />
+              </div>
+              <div className="flex gap-3">
+                <Button onClick={handleSave} className="flex items-center gap-2">
+                  <Save size={16} />
+                  Save Changes
+                </Button>
+                <Button onClick={handleCancel} variant="outline">
+                  Cancel
+                </Button>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Content
-              </label>
-              <Textarea
-                value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-                className="min-h-[400px] text-sm leading-relaxed font-mono"
-                placeholder="Story content"
-              />
-            </div>
-            <div className="flex gap-3">
-              <Button onClick={handleSave} className="flex items-center gap-2">
-                <Save size={16} />
-                Save Changes
-              </Button>
-              <Button onClick={handleCancel} variant="outline">
-                Cancel
-              </Button>
-            </div>
-          </div>
+          )
         ) : (
           <>
             <h1 className="text-3xl font-bold text-gray-900 mb-2 break-words">
@@ -128,13 +161,25 @@ export function DraftViewer({
       
       {!isEditing && (
         <div className="flex gap-3">
-          <Button
-            onClick={onCreateVersion}
-            className="flex items-center gap-2"
-          >
-            <Wand2 size={16} />
-            Create Version
-          </Button>
+          <div className="flex gap-1">
+            <Button
+              onClick={onCreateVersion}
+              className="flex items-center gap-2"
+            >
+              <Wand2 size={16} />
+              Quick Version
+            </Button>
+            {onCreateVersionAdvanced && (
+              <Button
+                onClick={onCreateVersionAdvanced}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <FileText size={16} />
+                Advanced Editor
+              </Button>
+            )}
+          </div>
           {onExtractCharacters && (
             <Button
               onClick={onExtractCharacters}

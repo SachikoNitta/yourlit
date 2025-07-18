@@ -8,6 +8,7 @@ import { SettingsPage } from '@/components/SettingsPage'
 import { StoriesPage } from '@/components/StoriesPage'
 import { TreesPage } from '@/components/TreesPage'
 import { CharactersPage } from '@/components/CharactersPage'
+import { WorldSettingsPage } from '@/components/WorldSettingsPage'
 import { TreeNode } from '@/app/trees/types'
 import { 
   performFullCleanup, 
@@ -72,7 +73,7 @@ export default function Component() {
     firebaseProjectId: ''
   })
   const [isHydrated, setIsHydrated] = useState(false)
-  const [currentPage, setCurrentPage] = useState<'trees' | 'tree' | 'settings' | 'stories' | 'characters'>('trees')
+  const [currentPage, setCurrentPage] = useState<'trees' | 'tree' | 'settings' | 'stories' | 'characters' | 'worlds'>('trees')
   const [trees, setTrees] = useState<any[]>([])
   const [currentTreeId, setCurrentTreeId] = useState<string | null>(null)
   const [editorMode, setEditorMode] = useState<'advanced' | 'simple'>('advanced')
@@ -343,6 +344,7 @@ export default function Component() {
         onShowSettings={() => setCurrentPage('settings')}
         onShowStories={() => setCurrentPage('stories')}
         onShowCharacters={() => setCurrentPage('characters')}
+        onShowWorldSettings={() => setCurrentPage('worlds')}
       />
       
       {currentPage === 'trees' && (
@@ -495,6 +497,13 @@ export default function Component() {
         <div className="ml-12 w-[calc(100vw-3rem)]">
           <CharactersPage />
         </div>
+      )}
+      
+      {currentPage === 'worlds' && (
+        <WorldSettingsPage 
+          isHydrated={isHydrated} 
+          settings={settings}
+        />
       )}
       
     </>
