@@ -1,6 +1,6 @@
 "use client"
 
-import { Settings, FileText, Trees, User, Globe } from "lucide-react"
+import { Settings, FileText, Trees, User, Globe, Heart } from "lucide-react"
 
 interface ActivityBarProps {
   onShowTrees?: () => void
@@ -8,6 +8,7 @@ interface ActivityBarProps {
   onShowStories?: () => void
   onShowCharacters?: () => void
   onShowWorldSettings?: () => void
+  onShowEmotionCodes?: () => void
 }
 
 export function ActivityBar({
@@ -15,7 +16,8 @@ export function ActivityBar({
   onShowSettings,
   onShowStories,
   onShowCharacters,
-  onShowWorldSettings
+  onShowWorldSettings,
+  onShowEmotionCodes
 }: ActivityBarProps) {
 
 
@@ -45,6 +47,12 @@ export function ActivityBar({
           className="p-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors"
         >
           <Globe size={20} />
+        </button>
+        <button
+          onClick={onShowEmotionCodes}
+          className="p-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors"
+        >
+          <Heart size={20} />
         </button>
         <button
           onClick={onShowSettings}
